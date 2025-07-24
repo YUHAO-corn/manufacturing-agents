@@ -1,15 +1,15 @@
-# 详细安装指南
+# 制造业智能补货决策系统安装指南
 
-## 概述
+## 📋 概述
 
-本指南提供了 TradingAgents 框架的详细安装说明，包括不同操作系统的安装步骤、依赖管理、环境配置和常见问题解决方案。
+本指南提供了制造业智能补货决策系统的详细安装说明，包括不同操作系统的安装步骤、依赖管理、环境配置和常见问题解决方案。
 
-## 系统要求
+## 💻 系统要求
 
 ### 硬件要求
 - **CPU**: 双核 2.0GHz 或更高 (推荐四核)
 - **内存**: 最少 4GB RAM (推荐 8GB 或更高)
-- **存储**: 至少 5GB 可用磁盘空间
+- **存储**: 至少 3GB 可用磁盘空间
 - **网络**: 稳定的互联网连接 (用于API调用和数据获取)
 
 ### 软件要求
@@ -20,7 +20,7 @@
 - **Python**: 3.10, 3.11, 或 3.12 (推荐 3.11)
 - **Git**: 用于克隆代码仓库
 
-## 安装步骤
+## 🚀 安装步骤
 
 ### 1. 安装 Python
 
@@ -95,58 +95,38 @@ pip3.11 --version
 
 ```bash
 # 克隆项目仓库
-git clone https://github.com/TauricResearch/TradingAgents.git
+git clone https://github.com/your-org/manufacturing-ai-agents.git
 
 # 进入项目目录
-cd TradingAgents
-
-# 查看项目结构
-ls -la
+cd manufacturing-ai-agents
 ```
 
 ### 3. 创建虚拟环境
 
 #### 使用 venv (推荐)
 ```bash
+# 创建虚拟环境
+python -m venv venv
+
+# 激活虚拟环境
 # Windows
-python -m venv tradingagents
-tradingagents\Scripts\activate
+venv\Scripts\activate
 
 # macOS/Linux
-python3 -m venv tradingagents
-source tradingagents/bin/activate
-
-# 验证虚拟环境
-which python  # 应该指向虚拟环境中的 Python
+source venv/bin/activate
 ```
 
 #### 使用 conda
 ```bash
-# 创建环境
-conda create -n tradingagents python=3.11
+# 创建虚拟环境
+conda create -n manufacturing-ai python=3.11
 
 # 激活环境
-conda activate tradingagents
-
-# 验证环境
-conda info --envs
-```
-
-#### 使用 pipenv
-```bash
-# 安装 pipenv
-pip install pipenv
-
-# 创建环境并安装依赖
-pipenv install
-
-# 激活环境
-pipenv shell
+conda activate manufacturing-ai
 ```
 
 ### 4. 安装依赖
 
-#### 基础安装
 ```bash
 # 升级 pip
 pip install --upgrade pip
@@ -154,350 +134,274 @@ pip install --upgrade pip
 # 安装项目依赖
 pip install -r requirements.txt
 
-# 验证安装
-pip list | grep langchain
-pip list | grep tradingagents
+# 如果遇到依赖冲突，可以尝试
+pip install -r requirements.txt --force-reinstall
 ```
 
-#### 开发环境安装
+### 5. 环境配置
+
+#### 创建配置文件
 ```bash
-# 安装开发依赖 (如果有 requirements-dev.txt)
-pip install -r requirements-dev.txt
+# 复制配置模板
+cp .env.example .env
 
-# 或安装可编辑模式
-pip install -e .
+# 编辑配置文件
+# Windows
+notepad .env
 
-# 安装额外的开发工具
-pip install pytest black flake8 mypy jupyter
+# macOS/Linux
+nano .env
+# 或
+vim .env
 ```
 
-#### 可选依赖
+#### 必需的API密钥配置
 ```bash
-# Redis 支持 (用于高级缓存)
-pip install redis
+# .env 文件内容示例
 
-# 数据库支持
-pip install sqlalchemy psycopg2-binary
+# =============================================================================
+# 🤖 LLM 服务配置 (至少配置一个)
+# =============================================================================
 
-# 可视化支持
-pip install matplotlib seaborn plotly
+# 🇨🇳 阿里百炼 (推荐，国内访问速度快)
+DASHSCOPE_API_KEY=your_dashscope_api_key_here
+DASHSCOPE_MODEL=qwen-max
 
-# Jupyter 支持
-pip install jupyter ipykernel
-python -m ipykernel install --user --name=tradingagents
+# Google AI (免费额度大)
+GOOGLE_API_KEY=your_google_api_key_here
+GOOGLE_MODEL=gemini-1.5-pro
+
+# OpenAI (可选)
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4
+
+# =============================================================================
+# 📊 数据源配置
+# =============================================================================
+
+# TuShare Pro (经济数据，需要注册)
+TUSHARE_TOKEN=your_tushare_token_here
+
+# 聚合数据 (新闻和天气数据)
+JUHE_API_KEY=your_juhe_api_key_here
+
+# Google News (可选，用于补充新闻数据)
+GOOGLE_NEWS_API_KEY=your_google_news_api_key_here
+
+# =============================================================================
+# 🗄️ 数据库配置 (可选)
+# =============================================================================
+
+# MongoDB (用于数据持久化)
+MONGODB_ENABLED=false
+MONGODB_URI=mongodb://localhost:27017/manufacturing_ai
+
+# Redis (用于缓存)
+REDIS_ENABLED=false
+REDIS_URL=redis://localhost:6379/0
+
+# =============================================================================
+# 🔧 系统配置
+# =============================================================================
+
+# 日志级别
+LOG_LEVEL=INFO
+
+# 是否启用调试模式
+DEBUG=false
+
+# Web界面端口
+STREAMLIT_PORT=8501
 ```
 
-### 5. 配置 API 密钥
+### 6. API密钥获取指南
 
-#### 获取 API 密钥
+#### 🇨🇳 阿里百炼 API (推荐)
+1. 访问 [阿里云百炼平台](https://dashscope.aliyun.com/)
+2. 注册/登录阿里云账户
+3. 开通百炼服务
+4. 创建API密钥
+5. 复制API密钥到 `.env` 文件
 
-**OpenAI API**
-1. 访问 [OpenAI Platform](https://platform.openai.com/)
-2. 注册账户并登录
-3. 导航到 API Keys 页面
-4. 创建新的 API 密钥
-5. 复制密钥 (注意: 只显示一次)
+#### Google AI API
+1. 访问 [Google AI Studio](https://aistudio.google.com/)
+2. 登录Google账户
+3. 创建新的API密钥
+4. 复制API密钥到 `.env` 文件
 
-**FinnHub API**
-1. 访问 [FinnHub](https://finnhub.io/)
-2. 注册免费账户
-3. 在仪表板中找到 API 密钥
-4. 复制密钥
+#### TuShare Pro Token (经济数据)
+1. 访问 [TuShare Pro](https://tushare.pro/)
+2. 注册账户并实名认证
+3. 获取Token
+4. 复制Token到 `.env` 文件
 
-**其他可选 API**
-- **Anthropic**: [console.anthropic.com](https://console.anthropic.com/)
-- **Google AI**: [ai.google.dev](https://ai.google.dev/)
+#### 聚合数据API (新闻/天气)
+1. 访问 [聚合数据](https://www.juhe.cn/)
+2. 注册账户
+3. 申请相关API服务
+4. 复制API密钥到 `.env` 文件
 
-#### 设置环境变量
+### 7. 验证安装
 
-**Windows (PowerShell)**
-```powershell
-# 临时设置 (当前会话)
-$env:OPENAI_API_KEY="your_openai_api_key"
-$env:FINNHUB_API_KEY="your_finnhub_api_key"
-
-# 永久设置 (系统环境变量)
-[Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "your_openai_api_key", "User")
-[Environment]::SetEnvironmentVariable("FINNHUB_API_KEY", "your_finnhub_api_key", "User")
-```
-
-**Windows (Command Prompt)**
-```cmd
-# 临时设置
-set OPENAI_API_KEY=your_openai_api_key
-set FINNHUB_API_KEY=your_finnhub_api_key
-
-# 永久设置 (需要重启)
-setx OPENAI_API_KEY "your_openai_api_key"
-setx FINNHUB_API_KEY "your_finnhub_api_key"
-```
-
-**macOS/Linux**
+#### 运行测试命令
 ```bash
-# 临时设置 (当前会话)
-export OPENAI_API_KEY="your_openai_api_key"
-export FINNHUB_API_KEY="your_finnhub_api_key"
+# 测试基础功能
+python -c "import manufacturingagents; print('安装成功!')"
 
-# 永久设置 (添加到 ~/.bashrc 或 ~/.zshrc)
-echo 'export OPENAI_API_KEY="your_openai_api_key"' >> ~/.bashrc
-echo 'export FINNHUB_API_KEY="your_finnhub_api_key"' >> ~/.bashrc
-source ~/.bashrc
+# 测试配置
+python -c "from manufacturingagents.config import get_config; print('配置加载成功!')"
+
+# 测试LLM连接
+python tests/test_llm_connection.py
 ```
 
-#### 使用 .env 文件 (推荐)
+#### 启动Web界面
 ```bash
-# 创建 .env 文件
-cat > .env << EOF
-OPENAI_API_KEY=your_openai_api_key
-FINNHUB_API_KEY=your_finnhub_api_key
-ANTHROPIC_API_KEY=your_anthropic_api_key
-GOOGLE_API_KEY=your_google_api_key
-TRADINGAGENTS_RESULTS_DIR=./results
-TRADINGAGENTS_LOG_LEVEL=INFO
-EOF
+# 启动Streamlit界面
+streamlit run web/app.py
 
-# 安装 python-dotenv (如果未安装)
-pip install python-dotenv
+# 或使用Python启动
+python web/run_web.py
 ```
 
-### 6. 验证安装
+浏览器访问: `http://localhost:8501`
 
-#### 基本验证
+### 8. 数据库安装 (可选)
+
+#### MongoDB (推荐用于生产环境)
 ```bash
-# 检查 Python 版本
-python --version
+# Ubuntu/Debian
+sudo apt install mongodb
 
-# 检查已安装的包
-pip list | grep -E "(langchain|tradingagents|openai|finnhub)"
+# macOS
+brew install mongodb-community
 
-# 检查环境变量
-python -c "import os; print('OpenAI:', bool(os.getenv('OPENAI_API_KEY'))); print('FinnHub:', bool(os.getenv('FINNHUB_API_KEY')))"
+# Windows
+# 从官网下载安装包: https://www.mongodb.com/try/download/community
+
+# 启动服务
+sudo systemctl start mongod  # Linux
+brew services start mongodb-community  # macOS
 ```
 
-#### 功能验证
-```python
-# test_installation.py
-import sys
-import os
-
-def test_installation():
-    """测试安装是否成功"""
-    
-    print("=== TradingAgents 安装验证 ===\n")
-    
-    # 1. Python 版本检查
-    print(f"Python 版本: {sys.version}")
-    if sys.version_info < (3, 10):
-        print("❌ Python 版本过低，需要 3.10 或更高版本")
-        return False
-    else:
-        print("✅ Python 版本符合要求")
-    
-    # 2. 依赖包检查
-    required_packages = [
-        'langchain_openai',
-        'langgraph',
-        'finnhub',
-        'pandas',
-        'requests'
-    ]
-    
-    missing_packages = []
-    for package in required_packages:
-        try:
-            __import__(package)
-            print(f"✅ {package} 已安装")
-        except ImportError:
-            print(f"❌ {package} 未安装")
-            missing_packages.append(package)
-    
-    if missing_packages:
-        print(f"\n缺少依赖包: {missing_packages}")
-        return False
-    
-    # 3. API 密钥检查
-    api_keys = {
-        'OPENAI_API_KEY': os.getenv('OPENAI_API_KEY'),
-        'FINNHUB_API_KEY': os.getenv('FINNHUB_API_KEY')
-    }
-    
-    for key_name, key_value in api_keys.items():
-        if key_value:
-            print(f"✅ {key_name} 已设置")
-        else:
-            print(f"❌ {key_name} 未设置")
-    
-    # 4. TradingAgents 导入测试
-    try:
-        from manufacturingagents.graph.trading_graph import TradingAgentsGraph
-        from manufacturingagents.default_config import DEFAULT_CONFIG
-        print("✅ TradingAgents 核心模块导入成功")
-    except ImportError as e:
-        print(f"❌ TradingAgents 导入失败: {e}")
-        return False
-    
-    print("\n🎉 安装验证完成!")
-    return True
-
-if __name__ == "__main__":
-    success = test_installation()
-    sys.exit(0 if success else 1)
-```
-
-运行验证脚本:
+#### Redis (缓存加速)
 ```bash
-python test_installation.py
+# Ubuntu/Debian
+sudo apt install redis-server
+
+# macOS
+brew install redis
+
+# Windows
+# 从GitHub下载: https://github.com/MicrosoftArchive/redis/releases
+
+# 启动服务
+sudo systemctl start redis  # Linux
+brew services start redis  # macOS
 ```
 
-## 常见问题解决
+## 🔧 高级配置
+
+### Docker 部署 (推荐用于生产环境)
+
+#### 使用 Docker Compose
+```bash
+# 构建和启动所有服务
+docker-compose up -d
+
+# 查看服务状态
+docker-compose ps
+
+# 查看日志
+docker-compose logs -f
+```
+
+#### 单独运行应用
+```bash
+# 构建镜像
+docker build -t manufacturing-ai-agents .
+
+# 运行容器
+docker run -d \
+  --name manufacturing-ai \
+  -p 8501:8501 \
+  --env-file .env \
+  manufacturing-ai-agents
+```
+
+### 性能优化配置
+
+#### 多进程配置
+```bash
+# 在 .env 文件中添加
+WORKERS=4
+MAX_CONCURRENT_REQUESTS=10
+CACHE_TTL=3600
+```
+
+#### 内存优化
+```bash
+# 限制模型并发数
+MAX_CONCURRENT_AGENTS=3
+
+# 启用内存清理
+ENABLE_MEMORY_CLEANUP=true
+MEMORY_CLEANUP_INTERVAL=600
+```
+
+## ❗ 常见问题
 
 ### 1. Python 版本问题
 ```bash
-# 问题: python 命令找不到或版本错误
-# 解决方案:
-
-# Windows: 使用 py 启动器
-py -3.11 --version
-
-# macOS/Linux: 使用具体版本
-python3.11 --version
-
-# 创建别名 (Linux/macOS)
-alias python=python3.11
+# 问题: Python版本不兼容
+# 解决: 使用pyenv管理多个Python版本
+pyenv install 3.11.7
+pyenv local 3.11.7
 ```
 
-### 2. 权限问题
+### 2. 依赖安装失败
 ```bash
-# 问题: pip 安装时权限被拒绝
-# 解决方案:
-
-# 使用用户安装
-pip install --user -r requirements.txt
-
-# 或使用虚拟环境 (推荐)
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-# venv\Scripts\activate  # Windows
-```
-
-### 3. 网络连接问题
-```bash
-# 问题: pip 安装超时或连接失败
-# 解决方案:
-
-# 使用国内镜像源
+# 问题: pip安装失败
+# 解决: 使用国内镜像源
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
-
-# 或配置永久镜像源
-pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple/
 ```
 
-### 4. 依赖冲突问题
+### 3. API访问问题
 ```bash
-# 问题: 包版本冲突
-# 解决方案:
-
-# 清理环境重新安装
-pip freeze > installed_packages.txt
-pip uninstall -r installed_packages.txt -y
-pip install -r requirements.txt
-
-# 或使用新的虚拟环境
-deactivate
-rm -rf tradingagents  # 删除旧环境
-python -m venv tradingagents
-source tradingagents/bin/activate
-pip install -r requirements.txt
+# 问题: API连接超时
+# 解决: 检查网络连接和API密钥
+curl -H "Authorization: Bearer YOUR_API_KEY" https://dashscope.aliyuncs.com/api/v1/models
 ```
 
-### 5. API 密钥问题
+### 4. 内存不足
 ```bash
-# 问题: API 密钥无效或未设置
-# 解决方案:
-
-# 检查密钥格式
-echo $OPENAI_API_KEY | wc -c  # 应该是 51 字符 (sk-...)
-
-# 重新设置密钥
-unset OPENAI_API_KEY
-export OPENAI_API_KEY="your_correct_api_key"
-
-# 测试 API 连接
-python -c "
-import openai
-import os
-client = openai.OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-print('API 连接测试成功')
-"
+# 问题: 内存不足导致程序崩溃
+# 解决: 减少并发数量或增加虚拟内存
+export MAX_CONCURRENT_AGENTS=2
 ```
 
-## 高级安装选项
-
-### 1. Docker 安装
-```dockerfile
-# Dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-ENV PYTHONPATH=/app
-
-CMD ["python", "-m", "cli.main"]
-```
-
+### 5. 端口冲突
 ```bash
-# 构建镜像
-docker build -t tradingagents .
-
-# 运行容器
-docker run -e OPENAI_API_KEY=$OPENAI_API_KEY -e FINNHUB_API_KEY=$FINNHUB_API_KEY tradingagents
+# 问题: 端口被占用
+# 解决: 修改端口配置
+streamlit run web/app.py --server.port 8502
 ```
 
-### 2. 开发环境设置
-```bash
-# 安装开发工具
-pip install pre-commit black isort flake8 mypy pytest
+## 📚 下一步
 
-# 设置 pre-commit hooks
-pre-commit install
+安装完成后，建议继续阅读：
 
-# 配置 IDE (VS Code)
-code --install-extension ms-python.python
-code --install-extension ms-python.black-formatter
-```
+1. [快速开始指南](quick-start.md) - 运行第一个补货分析
+2. [配置指南](../configuration/config-guide.md) - 详细配置说明
+3. [使用指南](../usage/web-interface-guide.md) - Web界面使用说明
+4. [开发指南](../development/development-workflow.md) - 参与项目开发
 
-### 3. 性能优化
-```bash
-# 安装加速库
-pip install numpy scipy numba
+## 💬 获取帮助
 
-# GPU 支持 (如果需要)
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
-```
+如果在安装过程中遇到问题：
 
-## 卸载指南
+1. 查看 [常见问题解答](../faq/faq.md)
+2. 搜索 [GitHub Issues](https://github.com/your-org/manufacturing-ai-agents/issues)
+3. 提交新的 [Issue](https://github.com/your-org/manufacturing-ai-agents/issues/new)
 
-### 完全卸载
-```bash
-# 停用虚拟环境
-deactivate
-
-# 删除虚拟环境
-rm -rf tradingagents  # Linux/macOS
-rmdir /s tradingagents  # Windows
-
-# 删除项目文件
-cd ..
-rm -rf TradingAgents
-
-# 清理环境变量 (可选)
-unset OPENAI_API_KEY
-unset FINNHUB_API_KEY
-```
-
-安装完成后，您可以继续阅读 [快速开始指南](quick-start.md) 来开始使用 TradingAgents。
+祝您使用愉快！🎉

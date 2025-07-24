@@ -1,536 +1,476 @@
-# 研究员团队设计
+# 制造业决策顾问团队
 
-## 概述
+## 🎯 团队概述
 
-研究员团队是 TradingAgents 框架中的关键组件，负责对分析师团队的报告进行深度研究和辩论。通过看涨和看跌研究员之间的结构化辩论，系统能够从多个角度评估投资机会，形成更加平衡和全面的投资观点。
+制造业决策顾问团队是系统的核心决策支持单元，由2个对抗性智能体组成，通过辩论式分析为补货决策提供多角度的专业建议。
 
-## 研究员架构
+### 团队特色
+- **⚔️ 对抗式分析**: 乐观与谨慎两种视角的深度辩论
+- **🎯 专业决策**: 基于分析师报告提供具体决策建议
+- **🧠 批判思维**: 挑战和验证分析结论的逻辑性
+- **📊 平衡视角**: 确保决策考虑全面，避免单一偏见
 
-### 基础研究员类
+## 🤖 决策顾问团队成员
 
+### 😊 乐观建议师 (Optimistic Advisor)
+
+#### 🎯 角色定位
+**专业身份**: 机会识别专家  
+**核心使命**: 从积极角度挖掘市场机会，为企业发现增长潜力和竞争优势
+
+#### 📋 专业职责
 ```python
-class BaseResearcher:
-    """所有研究员的基础类"""
+分析视角:
+- 积极因素挖掘
+- 增长机会识别
+- 市场扩张可能性
+- 竞争优势分析
+
+核心能力:
+- 机会敏感性
+- 创新思维
+- 增长导向分析
+- 积极风险承担
+```
+
+#### 🔍 分析重点
+| 分析维度 | 关注要点 | 输出特征 |
+|---------|----------|----------|
+| **市场环境** | PMI上升、政策利好、成本下降 | 强调积极信号 |
+| **需求趋势** | 增长潜力、新兴需求、季节性机会 | 突出增长机会 |
+| **行业新闻** | 技术突破、市场扩张、政策支持 | 关注正面催化剂 |
+| **消费者情绪** | 情绪改善、品牌认知提升、购买意愿增强 | 挖掘积极变化 |
+
+#### 📈 典型分析模式
+```markdown
+### 乐观建议师分析报告
+
+**🚀 核心机会识别**: [一句话总结最大机会]
+
+**📈 积极因素分析**:
+- **宏观利好**: PMI指数连续上升，制造业景气度持续改善
+- **政策支持**: 新出台的制造业扶持政策将带来税收优惠
+- **成本优势**: 原材料价格下降3%，成本压力显著缓解
+
+**🎯 增长机会**:
+- **市场扩张**: 二三线城市需求增长潜力巨大
+- **技术升级**: 新技术应用将提升产品竞争力
+- **品牌提升**: 消费者认知度提升带来品牌溢价机会
+
+**💡 积极建议**:
+- **补货策略**: 建议增加15-20%库存，抓住增长机会
+- **时机把握**: 在竞争对手反应前提前布局
+- **风险观点**: 当前风险可控，错失机会的风险更大
+
+**📊 置信度评估**: 85% (基于多项积极指标支撑)
+```
+
+#### 🧠 推理逻辑
+```python
+class OptimisticAnalysisLogic:
+    """乐观建议师分析逻辑"""
     
-    def __init__(self, llm, config, stance="neutral"):
-        self.llm = llm
-        self.config = config
-        self.stance = stance  # "bullish", "bearish", "neutral"
-        self.memory = ResearcherMemory()
-        self.debate_history = []
+    def analyze_market_signals(self, signals: Dict) -> Dict:
+        """乐观视角分析市场信号"""
+        positive_signals = []
+        neutral_as_positive = []
         
-    def research(self, analyst_reports: Dict, context: Dict = None) -> Dict:
-        """执行研究分析"""
-        
-        # 1. 分析师报告解读
-        interpretation = self.interpret_reports(analyst_reports)
-        
-        # 2. 立场分析
-        stance_analysis = self.analyze_from_stance(interpretation)
-        
-        # 3. 生成研究观点
-        research_view = self.generate_research_view(stance_analysis)
-        
-        # 4. 准备辩论要点
-        debate_points = self.prepare_debate_points(research_view)
+        for signal in signals:
+            if signal['trend'] == 'positive':
+                positive_signals.append({
+                    'signal': signal,
+                    'weight': 1.2,  # 放大积极信号
+                    'interpretation': self.amplify_positive(signal)
+                })
+            elif signal['trend'] == 'neutral':
+                # 中性信号解读为潜在积极
+                neutral_as_positive.append({
+                    'signal': signal,
+                    'weight': 0.8,
+                    'interpretation': self.find_hidden_opportunity(signal)
+                })
         
         return {
-            "interpretation": interpretation,
-            "stance_analysis": stance_analysis,
-            "research_view": research_view,
-            "debate_points": debate_points,
-            "confidence": self.calculate_confidence(research_view)
+            'dominant_theme': 'opportunity_focused',
+            'risk_tolerance': 'high',
+            'recommended_action': 'aggressive_expansion'
         }
-    
-    def debate(self, opponent_view: Dict, round_number: int) -> Dict:
-        """参与辩论"""
-        
-        # 1. 分析对手观点
-        opponent_analysis = self.analyze_opponent_view(opponent_view)
-        
-        # 2. 准备反驳
-        counter_arguments = self.prepare_counter_arguments(opponent_analysis)
-        
-        # 3. 强化自己观点
-        reinforced_view = self.reinforce_own_view(counter_arguments)
-        
-        # 4. 生成辩论回应
-        debate_response = self.generate_debate_response(
-            counter_arguments, reinforced_view, round_number
-        )
-        
-        # 5. 更新辩论历史
-        self.debate_history.append({
-            "round": round_number,
-            "opponent_view": opponent_view,
-            "response": debate_response
-        })
-        
-        return debate_response
 ```
 
-## 1. 看涨研究员 (Bull Researcher)
+### 😐 谨慎建议师 (Cautious Advisor)
 
-### 职责与特点
+#### 🎯 角色定位
+**专业身份**: 风险识别专家  
+**核心使命**: 从谨慎角度识别潜在风险，为企业提供风险控制和损失最小化策略
+
+#### 📋 专业职责
 ```python
-class BullResearcher(BaseResearcher):
-    """看涨研究员 - 从乐观角度评估投资机会"""
+分析视角:
+- 风险因素识别
+- 不确定性评估
+- 下行风险分析
+- 保守策略建议
+
+核心能力:
+- 风险敏感性
+- 审慎思维
+- 防御导向分析
+- 谨慎决策制定
+```
+
+#### 🔍 分析重点
+| 分析维度 | 关注要点 | 输出特征 |
+|---------|----------|----------|
+| **市场环境** | PMI下滑、政策不确定性、成本上升 | 强调风险信号 |
+| **需求趋势** | 需求疲软、市场饱和、周期性下行 | 突出下行风险 |
+| **行业新闻** | 贸易摩擦、环保限制、竞争加剧 | 关注负面冲击 |
+| **消费者情绪** | 情绪恶化、价格敏感性、品牌忠诚度下降 | 识别消费疲软 |
+
+#### 📉 典型分析模式
+```markdown
+### 谨慎建议师分析报告
+
+**⚠️ 核心风险提示**: [一句话总结最大风险]
+
+**🚨 风险因素分析**:
+- **宏观压力**: PMI指数虽有改善但仍低于历史均值
+- **政策不确定性**: 新政策实施效果存在不确定性
+- **成本风险**: 原材料价格下降可能只是短期现象
+
+**🎯 潜在威胁**:
+- **需求波动**: 消费者情绪改善程度有限，需求可能反复
+- **竞争加剧**: 同行可能同时增加供应，导致过度竞争
+- **库存风险**: 过度补货可能导致库存积压
+
+**💡 谨慎建议**:
+- **补货策略**: 建议谨慎增加5-10%库存，分批执行
+- **风险控制**: 密切监控需求变化，准备随时调整
+- **机会成本**: 保守策略虽然错失一些机会，但避免重大损失
+
+**📊 置信度评估**: 75% (基于多项风险因素考量)
+```
+
+#### 🧠 推理逻辑
+```python
+class CautiousAnalysisLogic:
+    """谨慎建议师分析逻辑"""
     
-    def __init__(self, llm, config):
-        super().__init__(llm, config, stance="bullish")
+    def analyze_market_signals(self, signals: Dict) -> Dict:
+        """谨慎视角分析市场信号"""
+        risk_signals = []
+        positive_as_risk = []
         
-    专业特点:
-    - 积极寻找增长机会
-    - 强调正面催化剂
-    - 关注上涨潜力
-    - 挑战悲观观点
-    
-    分析重点:
-    - 收入增长驱动因素
-    - 市场扩张机会
-    - 竞争优势分析
-    - 估值吸引力
-    - 技术创新潜力
-    - 管理层执行力
-```
-
-### 核心研究方法
-```python
-def analyze_from_stance(self, interpretation: Dict) -> Dict:
-    """从看涨角度分析"""
-    
-    bullish_factors = []
-    growth_opportunities = []
-    positive_catalysts = []
-    
-    # 基本面看涨因素
-    fundamental_data = interpretation.get("fundamental_analysis", {})
-    if fundamental_data.get("revenue_growth", 0) > 0.1:  # 10%以上增长
-        bullish_factors.append("强劲的收入增长")
-    
-    if fundamental_data.get("profit_margin_trend") == "improving":
-        bullish_factors.append("利润率改善趋势")
-    
-    # 技术面看涨信号
-    technical_data = interpretation.get("technical_analysis", {})
-    if technical_data.get("trend_direction") == "uptrend":
-        bullish_factors.append("技术面上升趋势")
-    
-    if technical_data.get("momentum") == "positive":
-        bullish_factors.append("正面动量信号")
-    
-    # 新闻面积极因素
-    news_data = interpretation.get("news_analysis", {})
-    if news_data.get("sentiment_score", 0) > 0.6:
-        positive_catalysts.append("积极的新闻情绪")
-    
-    # 识别增长机会
-    growth_opportunities = self._identify_growth_opportunities(interpretation)
-    
-    return {
-        "bullish_factors": bullish_factors,
-        "growth_opportunities": growth_opportunities,
-        "positive_catalysts": positive_catalysts,
-        "upside_potential": self._calculate_upside_potential(interpretation),
-        "risk_mitigation": self._identify_risk_mitigation_factors(interpretation)
-    }
-
-def _identify_growth_opportunities(self, interpretation: Dict) -> List[str]:
-    """识别增长机会"""
-    
-    opportunities = []
-    
-    # 市场扩张机会
-    if interpretation.get("market_size_growth", 0) > 0.05:
-        opportunities.append("市场规模持续扩张")
-    
-    # 新产品/服务机会
-    if interpretation.get("new_product_pipeline"):
-        opportunities.append("丰富的新产品管线")
-    
-    # 国际化机会
-    if interpretation.get("international_expansion"):
-        opportunities.append("国际市场扩张潜力")
-    
-    # 技术创新机会
-    if interpretation.get("innovation_score", 0) > 0.7:
-        opportunities.append("技术创新领先优势")
-    
-    return opportunities
-
-def prepare_debate_points(self, research_view: Dict) -> Dict:
-    """准备辩论要点"""
-    
-    return {
-        "main_arguments": [
-            "基本面数据显示强劲增长潜力",
-            "技术指标支持上涨趋势",
-            "市场情绪积极向好",
-            "估值仍有上升空间"
-        ],
-        "supporting_evidence": research_view.get("bullish_factors", []),
-        "growth_thesis": research_view.get("growth_opportunities", []),
-        "risk_responses": self._prepare_risk_responses(research_view),
-        "target_scenarios": self._develop_bull_scenarios(research_view)
-    }
-```
-
-### 辩论策略
-```python
-def generate_debate_response(self, counter_args: Dict, reinforced_view: Dict, round_num: int) -> Dict:
-    """生成辩论回应"""
-    
-    response_strategy = self._determine_response_strategy(round_num)
-    
-    if response_strategy == "aggressive":
-        return self._aggressive_response(counter_args, reinforced_view)
-    elif response_strategy == "defensive":
-        return self._defensive_response(counter_args, reinforced_view)
-    else:
-        return self._balanced_response(counter_args, reinforced_view)
-
-def _aggressive_response(self, counter_args: Dict, reinforced_view: Dict) -> Dict:
-    """积极进攻型回应"""
-    
-    return {
-        "response_type": "aggressive",
-        "main_points": [
-            "对手过度关注短期风险，忽视长期价值",
-            "市场恐慌情绪创造了绝佳买入机会",
-            "基本面改善趋势不可逆转",
-            "当前估值明显低估真实价值"
-        ],
-        "evidence_reinforcement": reinforced_view.get("strengthened_evidence", []),
-        "opponent_weaknesses": self._identify_opponent_weaknesses(counter_args),
-        "confidence_boost": "高度确信看涨观点的正确性"
-    }
-
-def _defensive_response(self, counter_args: Dict, reinforced_view: Dict) -> Dict:
-    """防守型回应"""
-    
-    return {
-        "response_type": "defensive",
-        "risk_acknowledgment": "承认存在一定风险，但风险可控",
-        "mitigation_strategies": [
-            "分散投资降低单一风险",
-            "设置合理止损位",
-            "关注基本面变化",
-            "动态调整仓位"
-        ],
-        "qualified_optimism": "在风险可控前提下保持乐观",
-        "evidence_reaffirmation": reinforced_view.get("core_evidence", [])
-    }
-```
-
-## 2. 看跌研究员 (Bear Researcher)
-
-### 职责与特点
-```python
-class BearResearcher(BaseResearcher):
-    """看跌研究员 - 从悲观角度评估投资风险"""
-    
-    def __init__(self, llm, config):
-        super().__init__(llm, config, stance="bearish")
+        for signal in signals:
+            if signal['trend'] == 'negative':
+                risk_signals.append({
+                    'signal': signal,
+                    'weight': 1.3,  # 放大风险信号
+                    'interpretation': self.amplify_risk(signal)
+                })
+            elif signal['trend'] == 'positive':
+                # 积极信号中寻找潜在风险
+                positive_as_risk.append({
+                    'signal': signal,
+                    'weight': 0.7,
+                    'interpretation': self.find_hidden_risk(signal)
+                })
         
-    专业特点:
-    - 专注风险识别
-    - 质疑乐观假设
-    - 关注下跌风险
-    - 挑战看涨观点
-    
-    分析重点:
-    - 潜在风险因素
-    - 估值过高风险
-    - 竞争威胁分析
-    - 宏观经济风险
-    - 行业周期性风险
-    - 公司治理问题
+        return {
+            'dominant_theme': 'risk_focused',
+            'risk_tolerance': 'low',
+            'recommended_action': 'conservative_approach'
+        }
 ```
 
-### 核心研究方法
-```python
-def analyze_from_stance(self, interpretation: Dict) -> Dict:
-    """从看跌角度分析"""
-    
-    bearish_factors = []
-    risk_factors = []
-    negative_catalysts = []
-    
-    # 基本面风险因素
-    fundamental_data = interpretation.get("fundamental_analysis", {})
-    if fundamental_data.get("debt_to_equity", 0) > 0.6:
-        bearish_factors.append("高负债比率风险")
-    
-    if fundamental_data.get("profit_margin_trend") == "declining":
-        bearish_factors.append("利润率下降趋势")
-    
-    # 技术面看跌信号
-    technical_data = interpretation.get("technical_analysis", {})
-    if technical_data.get("trend_direction") == "downtrend":
-        bearish_factors.append("技术面下降趋势")
-    
-    if technical_data.get("volume_trend") == "declining":
-        bearish_factors.append("成交量萎缩信号")
-    
-    # 新闻面负面因素
-    news_data = interpretation.get("news_analysis", {})
-    if news_data.get("sentiment_score", 0) < 0.4:
-        negative_catalysts.append("负面新闻情绪")
-    
-    # 识别风险因素
-    risk_factors = self._identify_risk_factors(interpretation)
-    
-    return {
-        "bearish_factors": bearish_factors,
-        "risk_factors": risk_factors,
-        "negative_catalysts": negative_catalysts,
-        "downside_potential": self._calculate_downside_potential(interpretation),
-        "valuation_concerns": self._assess_valuation_risks(interpretation)
-    }
+## 🔄 辩论协作机制
 
-def _identify_risk_factors(self, interpretation: Dict) -> List[Dict]:
-    """识别风险因素"""
-    
-    risks = []
-    
-    # 市场风险
-    if interpretation.get("market_volatility", 0) > 0.3:
-        risks.append({
-            "type": "market_risk",
-            "description": "市场波动性过高",
-            "severity": "high",
-            "probability": 0.7
-        })
-    
-    # 行业风险
-    if interpretation.get("industry_headwinds"):
-        risks.append({
-            "type": "industry_risk",
-            "description": "行业面临逆风",
-            "severity": "medium",
-            "probability": 0.6
-        })
-    
-    # 公司特定风险
-    if interpretation.get("company_specific_issues"):
-        risks.append({
-            "type": "company_risk",
-            "description": "公司特定问题",
-            "severity": "high",
-            "probability": 0.8
-        })
-    
-    return risks
+### 辩论流程设计
+```mermaid
+sequenceDiagram
+    participant Reports as 分析师报告
+    participant Opt as 乐观建议师
+    participant Cau as 谨慎建议师
+    participant Mgr as 决策管理员
+    participant Coord as 决策协调员
 
-def prepare_debate_points(self, research_view: Dict) -> Dict:
-    """准备辩论要点"""
+    Reports->>Opt: 1. 接收市场分析报告
+    Reports->>Cau: 1. 接收市场分析报告
     
-    return {
-        "main_arguments": [
-            "估值过高，缺乏安全边际",
-            "基本面恶化趋势明显",
-            "技术指标显示下跌风险",
-            "宏观环境不利于增长"
-        ],
-        "risk_evidence": research_view.get("risk_factors", []),
-        "valuation_concerns": research_view.get("valuation_concerns", []),
-        "scenario_analysis": self._develop_bear_scenarios(research_view),
-        "contrarian_points": self._prepare_contrarian_arguments(research_view)
-    }
+    par 独立分析阶段
+        Opt->>Opt: 2a. 机会识别分析
+        Cau->>Cau: 2b. 风险识别分析
+    end
+    
+    Opt->>Mgr: 3a. 提交乐观建议
+    Cau->>Mgr: 3b. 提交谨慎建议
+    
+    Mgr->>Mgr: 4. 识别分歧点
+    
+    loop 结构化辩论 (1-3轮)
+        Mgr->>Opt: 5a. 质疑谨慎观点
+        Mgr->>Cau: 5b. 质疑乐观观点
+        
+        Opt->>Cau: 6a. 反驳风险评估
+        Cau->>Opt: 6b. 反驳机会评估
+        
+        Opt->>Mgr: 7a. 更新建议
+        Cau->>Mgr: 7b. 更新建议
+    end
+    
+    Mgr->>Coord: 8. 提交辩论共识
 ```
 
-### 风险评估专长
-```python
-def _assess_valuation_risks(self, interpretation: Dict) -> Dict:
-    """评估估值风险"""
-    
-    valuation_data = interpretation.get("fundamental_analysis", {})
-    
-    concerns = []
-    
-    # P/E 比率分析
-    pe_ratio = valuation_data.get("pe_ratio", 0)
-    industry_avg_pe = valuation_data.get("industry_avg_pe", 0)
-    
-    if pe_ratio > industry_avg_pe * 1.5:
-        concerns.append("P/E比率显著高于行业平均")
-    
-    # P/B 比率分析
-    pb_ratio = valuation_data.get("pb_ratio", 0)
-    if pb_ratio > 3.0:
-        concerns.append("P/B比率过高，存在泡沫风险")
-    
-    # 增长率与估值匹配度
-    growth_rate = valuation_data.get("growth_rate", 0)
-    peg_ratio = pe_ratio / max(growth_rate * 100, 1)
-    
-    if peg_ratio > 2.0:
-        concerns.append("PEG比率过高，增长不足以支撑估值")
-    
-    return {
-        "concerns": concerns,
-        "overvaluation_risk": "high" if len(concerns) >= 2 else "medium",
-        "fair_value_estimate": self._calculate_conservative_fair_value(valuation_data),
-        "downside_protection": self._assess_downside_protection(valuation_data)
-    }
-```
-
-## 3. 辩论机制设计
-
-### 辩论管理器
+### 辩论规则与机制
 ```python
 class DebateManager:
-    """辩论管理器 - 协调研究员之间的辩论"""
+    """决策顾问辩论管理器"""
     
-    def __init__(self, config):
-        self.config = config
-        self.max_rounds = config.get("max_debate_rounds", 3)
-        self.consensus_threshold = config.get("consensus_threshold", 0.8)
+    def manage_debate(self, optimistic_view: str, cautious_view: str) -> Dict:
+        """管理乐观与谨慎顾问的辩论"""
         
-    def conduct_debate(self, bull_researcher: BullResearcher, 
-                      bear_researcher: BearResearcher,
-                      analyst_reports: Dict) -> Dict:
-        """主持辩论过程"""
-        
-        # 初始研究
-        bull_initial = bull_researcher.research(analyst_reports)
-        bear_initial = bear_researcher.research(analyst_reports)
-        
-        debate_history = []
+        debate_rounds = []
         current_round = 1
+        max_rounds = 3
         
-        while current_round <= self.max_rounds:
-            print(f"=== 辩论第 {current_round} 轮 ===")
+        while current_round <= max_rounds:
+            # 识别分歧点
+            disagreements = self._identify_disagreements(
+                optimistic_view, cautious_view
+            )
             
-            # 看涨方辩论
-            bull_response = bull_researcher.debate(bear_initial, current_round)
+            if not disagreements:
+                break  # 达成共识
             
-            # 看跌方辩论
-            bear_response = bear_researcher.debate(bull_initial, current_round)
+            # 组织辩论轮次
+            round_result = self._conduct_debate_round(
+                disagreements, current_round
+            )
             
-            # 记录辩论
-            round_record = {
-                "round": current_round,
-                "bull_response": bull_response,
-                "bear_response": bear_response,
-                "consensus_level": self._calculate_consensus(bull_response, bear_response)
-            }
+            debate_rounds.append(round_result)
             
-            debate_history.append(round_record)
+            # 更新观点
+            optimistic_view = round_result['updated_optimistic']
+            cautious_view = round_result['updated_cautious']
             
-            # 检查是否达成共识或需要继续
-            if self._should_continue_debate(round_record, current_round):
-                current_round += 1
-                # 更新观点用于下一轮
-                bull_initial = bull_response
-                bear_initial = bear_response
-            else:
-                break
+            current_round += 1
         
-        # 生成最终共识
-        final_consensus = self._generate_consensus(debate_history, bull_initial, bear_initial)
-        
-        return {
-            "debate_history": debate_history,
-            "final_consensus": final_consensus,
-            "total_rounds": current_round,
-            "consensus_quality": self._assess_consensus_quality(final_consensus)
-        }
+        return self._synthesize_debate_results(debate_rounds)
     
-    def _calculate_consensus(self, bull_view: Dict, bear_view: Dict) -> float:
-        """计算共识水平"""
+    def _identify_disagreements(self, opt_view: str, cau_view: str) -> List[Dict]:
+        """识别两种观点的分歧点"""
+        disagreements = []
         
-        # 提取关键观点
-        bull_confidence = bull_view.get("confidence", 0.5)
-        bear_confidence = bear_view.get("confidence", 0.5)
+        # 数量建议分歧
+        opt_quantity = self._extract_quantity_suggestion(opt_view)
+        cau_quantity = self._extract_quantity_suggestion(cau_view)
         
-        # 计算观点差异
-        confidence_diff = abs(bull_confidence - bear_confidence)
+        if abs(opt_quantity - cau_quantity) > 0.05:  # 5%差异
+            disagreements.append({
+                'type': 'quantity_disagreement',
+                'optimistic': opt_quantity,
+                'cautious': cau_quantity,
+                'gap': abs(opt_quantity - cau_quantity)
+            })
         
-        # 共识水平 = 1 - 观点差异
-        consensus_level = 1.0 - confidence_diff
+        # 风险评估分歧
+        opt_risk = self._extract_risk_assessment(opt_view)
+        cau_risk = self._extract_risk_assessment(cau_view)
         
-        return max(0.0, min(1.0, consensus_level))
-    
-    def _should_continue_debate(self, round_record: Dict, current_round: int) -> bool:
-        """判断是否继续辩论"""
+        if opt_risk != cau_risk:
+            disagreements.append({
+                'type': 'risk_disagreement',
+                'optimistic': opt_risk,
+                'cautious': cau_risk
+            })
         
-        # 达到最大轮次
-        if current_round >= self.max_rounds:
-            return False
-        
-        # 达成足够共识
-        if round_record["consensus_level"] >= self.consensus_threshold:
-            return False
-        
-        # 观点分歧仍然较大，继续辩论
-        return True
-    
-    def _generate_consensus(self, debate_history: List[Dict], 
-                          final_bull: Dict, final_bear: Dict) -> Dict:
-        """生成最终共识"""
-        
-        # 综合双方观点
-        consensus_points = []
-        
-        # 提取共同认可的要点
-        bull_factors = set(final_bull.get("main_points", []))
-        bear_factors = set(final_bear.get("main_points", []))
-        
-        common_points = bull_factors.intersection(bear_factors)
-        consensus_points.extend(list(common_points))
-        
-        # 平衡风险和机会
-        opportunities = final_bull.get("growth_opportunities", [])
-        risks = final_bear.get("risk_factors", [])
-        
-        # 生成平衡的投资建议
-        if len(opportunities) > len(risks):
-            recommendation = "谨慎乐观"
-            confidence = 0.6
-        elif len(risks) > len(opportunities):
-            recommendation = "谨慎悲观"
-            confidence = 0.4
-        else:
-            recommendation = "中性观望"
-            confidence = 0.5
-        
-        return {
-            "consensus_points": consensus_points,
-            "balanced_view": {
-                "opportunities": opportunities[:3],  # 前3个机会
-                "risks": risks[:3],  # 前3个风险
-            },
-            "recommendation": recommendation,
-            "confidence": confidence,
-            "key_factors_to_watch": self._identify_key_factors(final_bull, final_bear)
-        }
+        return disagreements
 ```
 
-### 辩论质量评估
+## 🎯 决策建议生成
+
+### 建议标准化格式
 ```python
-class DebateQualityAssessor:
-    """辩论质量评估器"""
+class DecisionRecommendation:
+    """决策建议标准格式"""
     
-    def assess_debate_quality(self, debate_result: Dict) -> Dict:
-        """评估辩论质量"""
-        
-        quality_metrics = {
-            "depth_score": self._assess_depth(debate_result),
-            "balance_score": self._assess_balance(debate_result),
-            "evidence_quality": self._assess_evidence_quality(debate_result),
-            "logical_consistency": self._assess_logical_consistency(debate_result),
-            "consensus_quality": self._assess_consensus_quality(debate_result)
-        }
-        
-        overall_quality = sum(quality_metrics.values()) / len(quality_metrics)
-        
-        return {
-            "quality_metrics": quality_metrics,
-            "overall_quality": overall_quality,
-            "quality_grade": self._assign_quality_grade(overall_quality),
-            "improvement_suggestions": self._generate_improvement_suggestions(quality_metrics)
+    def __init__(self):
+        self.template = {
+            "strategy": {
+                "direction": "",  # 增加/维持/减少
+                "magnitude": "",  # 幅度百分比
+                "timing": "",     # 执行时机
+                "confidence": 0.0 # 置信度
+            },
+            "rationale": {
+                "key_factors": [],    # 关键支撑因素
+                "risk_assessment": "", # 风险评估
+                "opportunity_cost": "" # 机会成本分析
+            },
+            "implementation": {
+                "execution_plan": "",  # 执行计划
+                "monitoring_points": [], # 监控要点
+                "adjustment_triggers": [] # 调整触发条件
+            }
         }
 ```
 
-研究员团队通过结构化的辩论机制，确保投资决策考虑了多个角度和潜在风险，提高了决策的质量和可靠性。
+### 建议质量评估
+```python
+class RecommendationQualityAssessment:
+    """建议质量评估器"""
+    
+    def assess_recommendation_quality(self, 
+                                    optimistic: Dict, 
+                                    cautious: Dict) -> Dict:
+        """评估建议质量"""
+        
+        assessment = {
+            "logical_consistency": 0.0,
+            "evidence_support": 0.0,
+            "risk_consideration": 0.0,
+            "actionability": 0.0
+        }
+        
+        # 逻辑一致性检查
+        assessment["logical_consistency"] = self._check_logical_consistency(
+            optimistic, cautious
+        )
+        
+        # 证据支撑度检查
+        assessment["evidence_support"] = self._check_evidence_support(
+            optimistic, cautious
+        )
+        
+        # 风险考虑充分性
+        assessment["risk_consideration"] = self._check_risk_consideration(
+            optimistic, cautious
+        )
+        
+        # 可执行性评估
+        assessment["actionability"] = self._check_actionability(
+            optimistic, cautious
+        )
+        
+        assessment["overall_score"] = sum(assessment.values()) / len(assessment)
+        
+        return assessment
+```
+
+## 📊 团队协作效果
+
+### 辩论质量指标
+```python
+class DebateQualityMetrics:
+    """辩论质量指标"""
+    
+    def calculate_debate_quality(self, debate_history: List[Dict]) -> Dict:
+        """计算辩论质量"""
+        
+        metrics = {
+            "argument_diversity": 0.0,    # 论点多样性
+            "evidence_strength": 0.0,     # 证据强度
+            "logical_rigor": 0.0,         # 逻辑严谨性
+            "consensus_quality": 0.0      # 共识质量
+        }
+        
+        # 论点多样性：覆盖的分析维度数量
+        unique_dimensions = set()
+        for round_data in debate_history:
+            unique_dimensions.update(round_data.get('dimensions', []))
+        metrics["argument_diversity"] = len(unique_dimensions) / 10  # 标准化
+        
+        # 证据强度：引用的数据支撑比例
+        total_arguments = sum(len(r.get('arguments', [])) for r in debate_history)
+        supported_arguments = sum(
+            len([a for a in r.get('arguments', []) if a.get('evidence')])
+            for r in debate_history
+        )
+        metrics["evidence_strength"] = supported_arguments / max(total_arguments, 1)
+        
+        # 逻辑严谨性：逻辑谬误检测
+        fallacy_count = sum(len(r.get('fallacies', [])) for r in debate_history)
+        metrics["logical_rigor"] = max(0, 1 - fallacy_count / 10)
+        
+        # 共识质量：最终一致性程度
+        final_round = debate_history[-1] if debate_history else {}
+        metrics["consensus_quality"] = final_round.get('consensus_score', 0.0)
+        
+        return metrics
+```
+
+### 决策影响分析
+```python
+class DecisionImpactAnalysis:
+    """决策影响分析"""
+    
+    def analyze_decision_impact(self, 
+                               final_decision: Dict,
+                               optimistic_original: Dict,
+                               cautious_original: Dict) -> Dict:
+        """分析最终决策的影响"""
+        
+        impact = {
+            "optimistic_influence": 0.0,   # 乐观建议的影响度
+            "cautious_influence": 0.0,     # 谨慎建议的影响度
+            "synthesis_level": 0.0,        # 综合程度
+            "balanced_score": 0.0          # 平衡性评分
+        }
+        
+        # 计算各方影响度
+        final_quantity = final_decision.get('quantity_adjustment', 0)
+        opt_quantity = optimistic_original.get('quantity_adjustment', 0)
+        cau_quantity = cautious_original.get('quantity_adjustment', 0)
+        
+        if opt_quantity != cau_quantity:
+            # 计算最终决策偏向哪一方
+            total_range = abs(opt_quantity - cau_quantity)
+            opt_distance = abs(final_quantity - opt_quantity)
+            cau_distance = abs(final_quantity - cau_quantity)
+            
+            impact["optimistic_influence"] = 1 - (opt_distance / total_range)
+            impact["cautious_influence"] = 1 - (cau_distance / total_range)
+        
+        # 综合程度：是否真正融合了两种观点
+        impact["synthesis_level"] = min(
+            impact["optimistic_influence"],
+            impact["cautious_influence"]
+        ) * 2  # 乘以2确保只有在两方都有影响时才高分
+        
+        # 平衡性评分
+        balance_diff = abs(
+            impact["optimistic_influence"] - impact["cautious_influence"]
+        )
+        impact["balanced_score"] = 1 - balance_diff
+        
+        return impact
+```
+
+## 🏆 性能优化与质量保证
+
+### 建议质量提升策略
+1. **📚 知识库增强**: 持续更新制造业专业知识
+2. **🎯 案例学习**: 基于历史决策效果优化建议逻辑
+3. **🔄 反馈循环**: 收集实际业务反馈，改进建议质量
+4. **⚖️ 平衡调优**: 动态调整乐观/谨慎的权重配置
+
+### 辩论效率优化
+```python
+class DebateOptimization:
+    """辩论效率优化"""
+    
+    def optimize_debate_process(self, historical_debates: List[Dict]) -> Dict:
+        """基于历史辩论优化流程"""
+        
+        optimization_suggestions = {
+            "optimal_rounds": self._find_optimal_rounds(historical_debates),
+            "key_focus_areas": self._identify_productive_topics(historical_debates),
+            "time_allocation": self._optimize_time_allocation(historical_debates),
+            "quality_thresholds": self._set_quality_thresholds(historical_debates)
+        }
+        
+        return optimization_suggestions
+```
+
+---
+
+制造业决策顾问团队通过乐观与谨慎的双重视角，为补货决策提供了全面、平衡的专业建议，确保决策既不盲目冒进，也不过分保守，在机会把握与风险控制之间找到最佳平衡点。

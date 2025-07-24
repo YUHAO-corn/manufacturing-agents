@@ -1,10 +1,10 @@
-# 快速开始指南
+# 制造业智能补货决策系统快速开始
 
-## 概述
+## 🎯 概述
 
-本指南将帮助您快速上手 TradingAgents 框架，从安装到运行第一个交易分析，只需几分钟时间。
+本指南将帮助您在15分钟内快速上手制造业智能补货决策系统，从安装到运行第一个补货分析。
 
-## 前置要求
+## 📋 前置要求
 
 ### 系统要求
 - **操作系统**: Windows 10+, macOS 10.15+, 或 Linux
@@ -12,45 +12,46 @@
 - **内存**: 至少 4GB RAM (推荐 8GB+)
 - **存储**: 至少 2GB 可用空间
 
-### API 密钥
-在开始之前，您需要获取以下API密钥：
+### API 密钥准备
+在开始之前，您需要获取以下API密钥（至少配置一个LLM服务）：
 
-1. **🇨🇳 阿里百炼 API Key** (推荐)
+1. **🇨🇳 阿里百炼 API Key** (推荐首选)
    - 访问 [阿里云百炼平台](https://dashscope.aliyun.com/)
    - 注册账户并获取API密钥
-   - 国产模型，无需科学上网，响应速度快
+   - ✅ 国产模型，无需科学上网，响应速度快
 
-2. **FinnHub API Key** (必需)
-   - 访问 [FinnHub](https://finnhub.io/)
-   - 注册免费账户并获取API密钥
-
-3. **Google AI API Key** (推荐)
+2. **Google AI API Key** (推荐备选)
    - 访问 [Google AI Studio](https://aistudio.google.com/)
    - 获取免费API密钥，支持Gemini模型
+   - ✅ 免费额度大，性能优秀
 
-4. **其他API密钥** (可选)
-   - OpenAI API (需要科学上网)
-   - Anthropic API (需要科学上网)
+3. **TuShare Pro Token** (可选，用于真实经济数据)
+   - 访问 [TuShare Pro](https://tushare.pro/)
+   - 注册并获取Token，可接入PMI、PPI等数据
 
-## 快速安装
+4. **聚合数据API** (可选，用于新闻天气数据)
+   - 访问 [聚合数据](https://www.juhe.cn/)
+   - 注册并申请相关API服务
+
+## 🚀 5分钟快速安装
 
 ### 1. 克隆项目
 ```bash
-# 克隆中文增强版
-git clone https://github.com/hsliuping/TradingAgents-CN.git
-cd TradingAgents-CN
+# 克隆项目仓库
+git clone https://github.com/your-org/manufacturing-ai-agents.git
+cd manufacturing-ai-agents
 ```
 
 ### 2. 创建虚拟环境
 ```bash
-# 使用 conda
-conda create -n tradingagents python=3.13
-conda activate tradingagents
+# 使用 venv (推荐)
+python -m venv venv
+source venv/bin/activate  # Linux/macOS
+# venv\Scripts\activate  # Windows
 
-# 或使用 venv
-python -m venv tradingagents
-source tradingagents/bin/activate  # Linux/macOS
-# tradingagents\Scripts\activate  # Windows
+# 或使用 conda
+conda create -n manufacturing-ai python=3.11
+conda activate manufacturing-ai
 ```
 
 ### 3. 安装依赖
@@ -60,30 +61,23 @@ pip install -r requirements.txt
 
 ### 4. 配置环境变量
 
-创建 `.env` 文件（推荐方式）：
+创建 `.env` 文件：
 ```bash
 # 复制配置模板
 cp .env.example .env
 
-# 编辑 .env 文件，配置以下API密钥：
-
+# 编辑配置文件，最少配置：
 # 🇨🇳 阿里百炼 (推荐)
 DASHSCOPE_API_KEY=your_dashscope_api_key_here
 
-# FinnHub (必需)
-FINNHUB_API_KEY=your_finnhub_api_key_here
-
-# Google AI (可选)
+# 或者 Google AI
 GOOGLE_API_KEY=your_google_api_key_here
 
-# 数据库配置 (可选，默认禁用)
-MONGODB_ENABLED=false
-REDIS_ENABLED=false
+# 可选: 经济数据
+TUSHARE_TOKEN=your_tushare_token_here
 ```
 
-## 第一次运行
-
-### 🌐 使用Web界面 (推荐)
+## 🌐 第一次运行 - Web界面体验
 
 最简单的开始方式是使用Web管理界面：
 
@@ -94,229 +88,207 @@ streamlit run web/app.py
 
 然后在浏览器中访问 `http://localhost:8501`
 
-Web界面提供：
-1. 🎛️ 直观的股票分析界面
-2. ⚙️ API密钥和配置管理
-3. 📊 实时分析进度显示
-4. 💰 Token使用统计
-5. 🇨🇳 完整的中文界面
+### Web界面功能
+1. 🎛️ **直观的补货分析界面** - 输入产品信息，一键生成决策报告
+2. ⚙️ **配置管理** - API密钥和系统参数配置
+3. 📊 **实时分析进度** - 可视化智能体工作过程
+4. 📄 **决策报告** - 详细的补货建议和风险评估
+5. 💾 **历史记录** - 查看和管理历史分析结果
 
-### 使用命令行界面 (CLI)
+## 🤖 第一次运行 - 命令行体验
 
-如果您偏好命令行：
+如果您偏好命令行界面：
 
 ```bash
-python -m cli.main
+# 运行基础补货分析
+python cli/main.py --product "汽车配件-制动器" --company "某汽车制造公司"
+
+# 查看详细帮助
+python cli/main.py --help
 ```
 
-### 使用 Python API
-
-创建一个简单的Python脚本：
-
-```python
-# quick_start.py
-from manufacturingagents.graph.trading_graph import TradingAgentsGraph
-from manufacturingagents.default_config import DEFAULT_CONFIG
-
-# 创建配置
-config = DEFAULT_CONFIG.copy()
-config["deep_think_llm"] = "gpt-4o-mini"  # 使用较便宜的模型进行测试
-config["quick_think_llm"] = "gpt-4o-mini"
-config["max_debate_rounds"] = 1  # 减少辩论轮次以节省成本
-config["online_tools"] = True  # 使用在线数据
-
-# 初始化交易智能体图
-ta = TradingAgentsGraph(debug=True, config=config)
-
-# 执行分析
-print("开始分析 AAPL...")
-state, decision = ta.propagate("AAPL", "2024-01-15")
-
-# 输出结果
-print("\n=== 分析结果 ===")
-print(f"推荐动作: {decision.get('action', 'hold')}")
-print(f"置信度: {decision.get('confidence', 0.5):.2f}")
-print(f"风险评分: {decision.get('risk_score', 0.5):.2f}")
-print(f"推理过程: {decision.get('reasoning', 'N/A')}")
-```
-
-运行脚本：
+### 命令行参数说明
 ```bash
-python quick_start.py
+python cli/main.py [options]
+
+选项:
+  --product TEXT        产品名称 (必需)
+  --company TEXT        公司名称 (可选)
+  --analysis-type TEXT  分析类型: basic/detailed/comprehensive
+  --output-format TEXT  输出格式: console/json/markdown
+  --save-results        是否保存结果到文件
+  --debug              启用调试模式
 ```
 
-## 配置选项
+## 📊 示例分析场景
 
-### 基本配置
-```python
-config = {
-    # LLM 设置
-    "llm_provider": "openai",           # 或 "anthropic", "google"
-    "deep_think_llm": "gpt-4o-mini",    # 深度思考模型
-    "quick_think_llm": "gpt-4o-mini",   # 快速思考模型
-    
-    # 辩论设置
-    "max_debate_rounds": 1,             # 辩论轮次 (1-5)
-    "max_risk_discuss_rounds": 1,       # 风险讨论轮次
-    
-    # 数据设置
-    "online_tools": True,               # 使用在线数据
-}
+### 场景一: 汽车零部件补货决策
+```bash
+# Web界面输入示例:
+产品名称: 汽车制动片
+公司名称: 博世汽车部件
+当前库存: 5000件
+安全库存: 1000件
+平均月销量: 2000件
 ```
 
-### 智能体选择
-```python
-# 选择要使用的分析师
-selected_analysts = [
-    "market",        # 技术分析师
-    "fundamentals",  # 基本面分析师
-    "news",         # 新闻分析师
-    "social"        # 社交媒体分析师
-]
-
-ta = TradingAgentsGraph(
-    selected_analysts=selected_analysts,
-    debug=True,
-    config=config
-)
+### 场景二: 电子元器件补货分析  
+```bash
+# 命令行示例:
+python cli/main.py \
+  --product "电子芯片-CPU" \
+  --company "英特尔中国" \
+  --analysis-type comprehensive \
+  --save-results
 ```
 
-## 示例分析流程
-
-### 完整的分析示例
-```python
-from manufacturingagents.graph.trading_graph import TradingAgentsGraph
-from manufacturingagents.default_config import DEFAULT_CONFIG
-import json
-
-def analyze_stock(symbol, date):
-    """分析指定股票"""
-    
-    # 配置
-    config = DEFAULT_CONFIG.copy()
-    config["deep_think_llm"] = "gpt-4o-mini"
-    config["quick_think_llm"] = "gpt-4o-mini"
-    config["max_debate_rounds"] = 2
-    config["online_tools"] = True
-    
-    # 创建分析器
-    ta = TradingAgentsGraph(
-        selected_analysts=["market", "fundamentals", "news", "social"],
-        debug=True,
-        config=config
-    )
-    
-    print(f"正在分析 {symbol} ({date})...")
-    
-    try:
-        # 执行分析
-        state, decision = ta.propagate(symbol, date)
-        
-        # 输出详细结果
-        print("\n" + "="*50)
-        print(f"股票: {symbol}")
-        print(f"日期: {date}")
-        print("="*50)
-        
-        print(f"\n📊 最终决策:")
-        print(f"  动作: {decision.get('action', 'hold').upper()}")
-        print(f"  数量: {decision.get('quantity', 0)}")
-        print(f"  置信度: {decision.get('confidence', 0.5):.1%}")
-        print(f"  风险评分: {decision.get('risk_score', 0.5):.1%}")
-        
-        print(f"\n💭 推理过程:")
-        print(f"  {decision.get('reasoning', 'N/A')}")
-        
-        # 分析师报告摘要
-        if hasattr(state, 'analyst_reports'):
-            print(f"\n📈 分析师报告摘要:")
-            for analyst, report in state.analyst_reports.items():
-                score = report.get('overall_score', report.get('score', 0.5))
-                print(f"  {analyst}: {score:.1%}")
-        
-        return decision
-        
-    except Exception as e:
-        print(f"❌ 分析失败: {e}")
-        return None
-
-# 运行示例
-if __name__ == "__main__":
-    # 分析苹果公司股票
-    result = analyze_stock("AAPL", "2024-01-15")
-    
-    if result:
-        print("\n✅ 分析完成!")
-    else:
-        print("\n❌ 分析失败!")
+### 场景三: 快消品补货策略
+```bash
+# Web界面输入示例:
+产品名称: 矿泉水
+公司名称: 农夫山泉
+季节因素: 夏季
+特殊事件: 促销活动
 ```
 
-## 常见问题解决
+## 📈 理解分析结果
 
-### 1. API 密钥错误
-```
-错误: OpenAI API key not found
-解决: 确保正确设置了 OPENAI_API_KEY 环境变量
-```
+系统会生成包含以下内容的智能补货报告：
 
-### 2. 网络连接问题
-```
-错误: Connection timeout
-解决: 检查网络连接，或使用代理设置
-```
+### 1. 市场环境分析
+- 宏观经济指标 (PMI、PPI等)
+- 行业发展趋势
+- 季节性因素影响
 
-### 3. 内存不足
-```
-错误: Out of memory
-解决: 减少 max_debate_rounds 或使用更小的模型
-```
+### 2. 需求预测分析
+- 历史需求趋势
+- 未来需求预测
+- 影响因素分析
 
-### 4. 数据获取失败
-```
-错误: Failed to fetch data
-解决: 检查 FINNHUB_API_KEY 是否正确，或稍后重试
-```
+### 3. 新闻情报分析
+- 行业重要新闻
+- 政策法规变化
+- 竞争对手动态
 
-## 成本控制建议
+### 4. 消费者洞察
+- 市场情绪变化
+- 消费者行为分析
+- 需求偏好趋势
 
-### 1. 使用较小的模型
-```python
-config["deep_think_llm"] = "gpt-4o-mini"    # 而不是 "gpt-4o"
-config["quick_think_llm"] = "gpt-4o-mini"   # 而不是 "gpt-4o"
-```
+### 5. 决策建议
+- **乐观建议**: 基于积极因素的补货建议
+- **谨慎建议**: 基于风险因素的保守建议
+- **综合决策**: 平衡各种因素的最终建议
 
-### 2. 减少辩论轮次
-```python
-config["max_debate_rounds"] = 1              # 而不是 3-5
-config["max_risk_discuss_rounds"] = 1        # 而不是 2-3
-```
+### 6. 风险评估
+- 库存风险评估
+- 市场风险分析
+- 供应链风险预警
 
-### 3. 选择性使用分析师
-```python
-# 只使用核心分析师
-selected_analysts = ["market", "fundamentals"]  # 而不是全部四个
+## 🔧 常用配置优化
+
+### 提升分析速度
+```bash
+# 在 .env 文件中添加
+MAX_CONCURRENT_AGENTS=3
+ENABLE_CACHING=true
+CACHE_TTL=3600
 ```
 
-### 4. 使用缓存数据
-```python
-config["online_tools"] = False  # 使用缓存数据而不是实时数据
+### 提高分析质量
+```bash
+# 使用更强的模型
+DASHSCOPE_MODEL=qwen-max
+GOOGLE_MODEL=gemini-1.5-pro
+
+# 启用详细分析
+ANALYSIS_DEPTH=comprehensive
+ENABLE_DEBATE=true
 ```
 
-## 下一步
+### 节省API成本
+```bash
+# 使用更经济的模型
+DASHSCOPE_MODEL=qwen-plus
+GOOGLE_MODEL=gemini-1.5-flash
 
-现在您已经成功运行了第一个分析，可以：
+# 启用缓存减少重复调用
+ENABLE_CACHING=true
+USE_LOCAL_CACHE=true
+```
 
-1. **探索更多功能**: 查看 [API参考文档](../api/core-api.md)
-2. **自定义配置**: 阅读 [配置指南](../configuration/config-guide.md)
-3. **开发自定义智能体**: 参考 [扩展开发指南](../development/extending.md)
-4. **查看更多示例**: 浏览 [示例和教程](../examples/basic-examples.md)
+## 🛠️ 常见问题快速解决
 
-## 获取帮助
+### Q1: API密钥无效
+```bash
+# 测试API连接
+python tests/test_llm_connection.py
 
-如果遇到问题，可以：
-- 查看 [常见问题](../faq/faq.md)
-- 访问 [GitHub Issues](https://github.com/TauricResearch/TradingAgents/issues)
-- 加入 [Discord 社区](https://discord.com/invite/hk9PGKShPK)
-- 查看 [故障排除指南](../faq/troubleshooting.md)
+# 重新配置密钥
+cp .env.example .env
+# 重新编辑 .env 文件
+```
 
-祝您使用愉快！🚀
+### Q2: 分析速度慢
+```bash
+# 检查网络连接
+ping google.com
+
+# 启用本地缓存
+echo "ENABLE_LOCAL_CACHE=true" >> .env
+
+# 减少并发数
+echo "MAX_CONCURRENT_AGENTS=2" >> .env
+```
+
+### Q3: 内存不足
+```bash
+# 释放内存
+echo "ENABLE_MEMORY_CLEANUP=true" >> .env
+echo "MEMORY_CLEANUP_INTERVAL=300" >> .env
+
+# 使用轻量级模型
+echo "DASHSCOPE_MODEL=qwen-turbo" >> .env
+```
+
+### Q4: 端口冲突
+```bash
+# 使用其他端口
+streamlit run web/app.py --server.port 8502
+```
+
+## 📚 下一步学习
+
+### 深入了解系统
+1. [系统架构文档](../architecture/system-architecture.md) - 了解技术架构
+2. [智能体设计](../architecture/agent-architecture.md) - 理解AI决策机制
+3. [数据流架构](../architecture/data-flow-architecture.md) - 掌握数据处理流程
+
+### 高级使用技巧
+1. [配置指南](../configuration/config-guide.md) - 详细配置选项
+2. [使用指南](../usage/web-interface-guide.md) - Web界面高级功能
+3. [开发指南](../development/development-workflow.md) - 自定义开发
+
+### 实际应用案例
+1. [基础示例](../examples/basic-examples.md) - 简单补货场景
+2. [高级示例](../examples/advanced-examples.md) - 复杂业务场景
+3. [故障排除](../troubleshooting/streamlit-file-watcher-fix.md) - 常见问题解决
+
+## 🎉 成功运行检查清单
+
+- [ ] 成功启动Web界面 (`http://localhost:8501`)
+- [ ] 配置至少一个LLM API密钥
+- [ ] 运行第一个补货分析
+- [ ] 查看生成的决策报告
+- [ ] 理解智能体协作过程
+- [ ] 保存分析结果
+
+## 💬 获取支持
+
+如果遇到任何问题：
+
+1. 查看 [FAQ文档](../faq/faq.md)
+2. 搜索 [GitHub Issues](https://github.com/your-org/manufacturing-ai-agents/issues)
+3. 提交新的Issue描述问题
+
+欢迎加入我们的社区，一起探索制造业AI应用的无限可能！🚀
