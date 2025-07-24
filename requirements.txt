@@ -1,0 +1,31 @@
+typing-extensions
+langchain-openai
+langchain-experimental
+pandas
+yfinance
+praw
+feedparser
+stockstats
+eodhd
+langgraph
+chromadb
+setuptools
+backtrader
+akshare
+tushare
+finnhub-python
+parsel
+requests
+tqdm
+pytz
+redis
+chainlit
+rich
+questionary
+langchain_anthropic
+langchain-google-genai
+dashscope
+streamlit
+plotly
+pytdx  # 通达信API，用于获取中国股票实时数据
+pymongo  # MongoDB数据库支持，用于Token使用记录存储

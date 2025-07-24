@@ -1,0 +1,56 @@
+# Python环境和缓存
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# 环境变量文件 (包含敏感API密钥)
+.env
+.env.local
+.env.*.local
+.env.db
+.env.mongodb*
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 数据文件
+*.csv
+*.json
+*.xlsx
+*.xls
+
+# 项目特定目录
+src/
+eval_results/
+eval_data/
+results/
+logs/
+temp/
+
+# IDE和编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 测试和覆盖率报告
+.coverage
+.pytest_cache/
+htmlcov/
+
+# 文档构建
+docs/_build/
+site/
+
+# 贡献相关文档 (不纳入版本控制)
+docs/contribution/
+
+# AI工具目录 (不纳入版本控制)
+.trae/
+.augment/
